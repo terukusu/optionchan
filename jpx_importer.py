@@ -115,13 +115,13 @@ def do_import(file_path):
 
 
 # 溜め込んだHTMLを初期データとして投入するための特殊な関数
-def bulk_import():
-    with open('html_list4.txt', mode='r') as f:
+# file_path には JPXのHTMLが1行1ファイルで
+# (期近1、次元月1、その次1、期近2、次元月2、その次2...)と並んでいる想定
+def bulk_import(file_path):
+    with open(file_path, mode='r') as f:
         data = f.read()
 
     html_list = data.split()
-
-    html_dir = '/Users/teru/work/op4_html'
 
     session = db.session
 
@@ -143,7 +143,7 @@ def bulk_import():
         log.debug('last updated_at on db: %s', last_updated_at)
         log.debug('last future price time on db: %s', last_price_time)
 
-        jpx = jpx_loader.load_jpx_from_file(html_dir + '/' + html_list[i])
+        jpx = jpx_loader.load_jpx_from_file(html_list[i])
 
         log.debug('updated_at on jpxweb: %s', jpx.updated_at)
         log.debug('future price time on jpxweb: %s', jpx.future_price_info.price_time)
@@ -157,17 +157,17 @@ def bulk_import():
 
         if is_updated:
             log.debug('updating..')
-            do_import(html_dir + '/' + html_list[i])
-            do_import(html_dir + '/' + html_list[i+1])
-            do_import(html_dir + '/' + html_list[i+2])
+            do_import(html_list[i])
+            do_import(html_list[i+1])
+            do_import(html_list[i+2])
         else:
             log.debug('skipping..')
 
 
 if __name__ == '__main__':
-    # # # 引数でHTMLファイルが指定されていればそれを読み込む
-    # file_path_arg = sys.argv[1] if len(sys.argv) >= 2 else None
-    #
-    # do_import(file_path_arg)
+    # 引数でHTMLファイルが指定されていればそれを読み込む
+    file_path_arg = sys.argv[1] if len(sys.argv) >= 2 else None
 
-    bulk_import()
+    do_import(file_path_arg)
+
+    # bulk_import(file_path_arg)
