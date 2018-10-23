@@ -116,12 +116,12 @@ def do_import(file_path):
 
 # 溜め込んだHTMLを初期データとして投入するための特殊な関数
 def bulk_import():
-    with open('html_list3.txt', mode='r') as f:
+    with open('html_list4.txt', mode='r') as f:
         data = f.read()
 
     html_list = data.split()
 
-    html_dir = '/Users/teru/work/op3_html'
+    html_dir = '/Users/teru/work/op4_html'
 
     session = db.session
 

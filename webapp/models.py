@@ -23,7 +23,10 @@ class AwareDateTime(TypeDecorator):
         return value
 
     def process_result_value(self, value, engine):
-        return AwareDateTime.__tz_db.localize(value).astimezone(AwareDateTime.__tz_local)
+        if value is None:
+            return None
+        else:
+            return AwareDateTime.__tz_db.localize(value).astimezone(AwareDateTime.__tz_local)
 
 
 class EnumType(TypeDecorator):
