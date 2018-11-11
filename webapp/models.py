@@ -111,7 +111,7 @@ class Option(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(EnumType(enum_class=OptionType), nullable=False)
     target_price = db.Column(db.Integer, nullable=False)
-    is_atm = db.Column(db.Boolean, index=True, nullable=False)
+    is_atm = db.Column(db.Boolean, nullable=False)
     price = db.Column(db.Integer)
     price_time = db.Column(AwareDateTime)
     diff = db.Column(db.Integer)
@@ -132,10 +132,11 @@ class Option(db.Model):
     theta = db.Column(db.Float)
     vega = db.Column(db.Float)
     last_trading_day = db.Column(db.Date, nullable=False)
-    updated_at = db.Column(AwareDateTime, nullable=False)
+    updated_at = db.Column(AwareDateTime, index=True, nullable=False)
 
     __table_args__ = (
         UniqueConstraint('type', 'target_price', 'last_trading_day', 'updated_at', name='unique_idx_option'),
+        db.Index('ix_option_is_atm_last_trading_day_up.dated_at', 'is_atm', 'last_trading_day', 'updated_at'),
     )
 
     def __init__(self,id, type, target_price, is_atm, price, price_time, diff, diff_rate, iv, bid, bid_volume, bid_iv, ask, ask_volume, ask_iv, volume, positions, quotation, quotation_date, delta, gamma, theta, vega, last_trading_day, updated_at):
