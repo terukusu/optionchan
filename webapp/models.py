@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 
 import pytz
@@ -11,22 +12,27 @@ class OptionType(Enum):
     CALL = 1
     PUT = 2
 
-
+#
+# DBにはunixtimestamp(秒精度)で格納しつつ、
+# PythonではJSTのAwareなdatetimeとして扱うためのタイプデコレータ。
+#
 class AwareDateTime(TypeDecorator):
 
-    impl = db.DateTime
+    impl = db.Integer
 
-    __tz_db = pytz.timezone('Asia/Tokyo')
     __tz_local = pytz.timezone('Asia/Tokyo')
 
     def process_bind_param(self, value, engine):
-        return value
+        if value is None:
+            return None
+        else:
+            return value.timestamp()
 
     def process_result_value(self, value, engine):
         if value is None:
             return None
         else:
-            return AwareDateTime.__tz_db.localize(value).astimezone(AwareDateTime.__tz_local)
+            return datetime.fromtimestamp(value, tz=AwareDateTime.__tz_local)
 
 
 class EnumType(TypeDecorator):
